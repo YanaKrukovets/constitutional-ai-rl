@@ -1,0 +1,10 @@
+torch>=2.1
+transformers>=4.43
+accelerate>=0.33
+peft>=0.12
+trl>=0.9
+datasets>=2.20
+bitsandbytes>=0.43; platform_system == "Linux"
+gradio>=4.40
+matplotlib>=3.8
+anthropic>=0.34
