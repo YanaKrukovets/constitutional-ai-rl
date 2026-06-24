@@ -1,0 +1,12 @@
+{
+  "total_responses_judged": 10,
+  "violation_count_by_rule": {
+    "rule_6": 1,
+    "rule_1": 4
+  },
+  "violation_rate_by_rule": {
+    "rule_6": 0.1,
+    "rule_1": 0.4
+  },
+  "overall_violation_rate": 0.5
+}
