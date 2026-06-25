@@ -41,15 +41,18 @@ def generate(tokenizer, model, device, prompt_text, max_new_tokens, temperature)
         messages, add_generation_prompt=True, return_tensors="pt"
     ).to(device)
 
+    do_sample = temperature > 0
+    gen_kwargs = dict(
+        max_new_tokens=max_new_tokens,
+        do_sample=do_sample,
+        pad_token_id=tokenizer.eos_token_id,
+    )
+    if do_sample:
+        gen_kwargs["temperature"] = temperature
+        gen_kwargs["top_p"] = 0.95
+
     with torch.no_grad():
-        output = model.generate(
-            inputs,
-            max_new_tokens=max_new_tokens,
-            do_sample=True,
-            temperature=temperature,
-            top_p=0.95,
-            pad_token_id=tokenizer.eos_token_id,
-        )
+        output = model.generate(inputs, **gen_kwargs)
     new_tokens = output[0][inputs.shape[1]:]
     return tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
 
