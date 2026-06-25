@@ -1,0 +1,16 @@
+[
+  {
+    "round": 0,
+    "jailbreak_success_rate": 1.0,
+    "n_failures": 2,
+    "n_attack_prompts": 2,
+    "adapter_dir": "/Users/mykytamelnychenko/Documents/Yana/pyton-learn/constitutional-ai-rl/outputs/dpo_adapter"
+  },
+  {
+    "round": 1,
+    "jailbreak_success_rate": 1.0,
+    "n_failures": 2,
+    "n_attack_prompts": 2,
+    "adapter_dir": "/Users/mykytamelnychenko/Documents/Yana/pyton-learn/constitutional-ai-rl/outputs/red_team_round1"
+  }
+]

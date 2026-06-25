@@ -26,7 +26,7 @@ if not hasattr(torch.backends.mps, "is_macos_or_newer"):
     torch.backends.mps.is_macos_or_newer = lambda *args, **kwargs: True
 
 from datasets import load_dataset
-from peft import LoraConfig
+from peft import LoraConfig, PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from trl import DPOConfig, DPOTrainer
 
@@ -48,6 +48,7 @@ def main():
     parser.add_argument("--lora-alpha", type=int, default=32)
     parser.add_argument("--force-cpu", action="store_true", help="force CPU training (workaround for a PyTorch MPS kernel bug on some macOS/torch combos)")
     parser.add_argument("--max-steps", type=int, default=-1, help="override epochs with a fixed step count, for quick smoke tests")
+    parser.add_argument("--init-adapter", default=None, help="path to an existing LoRA adapter to continue training from, instead of starting a fresh adapter on the base model (used by red_team.py for round 2+)")
     args = parser.parse_args()
 
     dataset = load_dataset("json", data_files=args.preference_data, split="train")
@@ -58,15 +59,21 @@ def main():
     print(f"Loaded {len(dataset)} preference pairs from {args.preference_data}")
 
     tokenizer = AutoTokenizer.from_pretrained(args.base_model)
-    model = AutoModelForCausalLM.from_pretrained(args.base_model)
+    base_model = AutoModelForCausalLM.from_pretrained(args.base_model)
 
-    lora_config = LoraConfig(
-        r=args.lora_r,
-        lora_alpha=args.lora_alpha,
-        lora_dropout=0.05,
-        target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
-        task_type="CAUSAL_LM",
-    )
+    if args.init_adapter:
+        print(f"Continuing training from existing adapter: {args.init_adapter}")
+        model = PeftModel.from_pretrained(base_model, args.init_adapter, is_trainable=True)
+        lora_config = None
+    else:
+        model = base_model
+        lora_config = LoraConfig(
+            r=args.lora_r,
+            lora_alpha=args.lora_alpha,
+            lora_dropout=0.05,
+            target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
+            task_type="CAUSAL_LM",
+        )
 
     training_args = DPOConfig(
         output_dir=args.output_dir,
