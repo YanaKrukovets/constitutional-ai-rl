@@ -173,9 +173,12 @@ class Judge:
         result.setdefault("rationale", "")
         return result
 
-    def classify(self, prompt: str, response: str) -> dict:
-        """Returns {"violated_rules": [...], "rationale": "..."} for a single response."""
-        judge_prompt = build_classify_prompt(prompt, response, self.rules)
+    def classify(self, prompt: str, response: str, rules=None) -> dict:
+        """Returns {"violated_rules": [...], "rationale": "..."} for a single
+        response. Pass `rules` to score against a different rule set than the
+        one this Judge was constructed with (used by the demo app's
+        constitution toggle)."""
+        judge_prompt = build_classify_prompt(prompt, response, rules or self.rules)
         raw = self._call(judge_prompt)
 
         try:

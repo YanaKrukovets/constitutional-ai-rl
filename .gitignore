@@ -3,3 +3,10 @@ __pycache__/
 *.pyc
 .DS_Store
 outputs/
+data/*.jsonl
+data/*.json
+results/metrics.json
+results/red_team_metrics.json
+results/eval_examples.json
+results/plots/
+.ipynb_checkpoints/
